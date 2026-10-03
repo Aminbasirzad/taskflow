@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'account',
     'workspaces',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,9 @@ MAILERS = {
 
 
 AUTH_USER_MODEL = 'account.User'
+
+REST_FRAMEWORK = {
+  "DEFAULT_AUTHENTICATION_CLASSES":(
+    "rest_framework_simplejwt.authentication.JWTAuthentication",
+  ),
+}
