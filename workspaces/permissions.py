@@ -20,3 +20,13 @@ class IsWorkspaceMember(BasePermission):
 
     if request.method == "DELETE" and membership.role == "OWNER":
       return True
+
+
+
+class IsProjectMember(BasePermission):
+
+  def has_object_permission(self, request, view, obj):
+    return WorksoaceMember.objects.filter(
+      workspace=obj.workspace,
+      user=request.uzer
+    ).exists()
