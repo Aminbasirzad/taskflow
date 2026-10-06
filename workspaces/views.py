@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsWorkspaceMember, IsProjectMember
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import WorkspaceFilter
+from .filters import WorkspaceFilter, ProjectFilter
 from .project_serializer import ProjectSerializer
 
 
@@ -51,6 +51,13 @@ class WorkspaceDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ProjectListCreateView(generics.ListCreateAPIView):
   serializer_class = ProjectSerializer
   permission_classes = [IsAuthenticated]
+  ordering_fields = ["name", "created_at"]
+  filterset_class = ProjectFilter
+  ordering = ["created_at"]
+  filter_backends = [
+    DjangoFilterBackend,OrderingFilter,
+  ]
+
 
   def get_queryset(self):
     return Project.objects.filter(
@@ -61,6 +68,8 @@ class ProjectListCreateView(generics.ListCreateAPIView):
     serializer.save(
       created_by=self.request.user
     )
+
+
 
 
 class ProjectDetailView(generics.RetrieveUpdateAPIView):
