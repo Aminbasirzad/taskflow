@@ -1,5 +1,5 @@
 import django_filters
-from .models import Workspaces
+from .models import Workspaces, Project
 
 
 class WorkspaceFilter(django_filters.FilterSet):
@@ -12,3 +12,16 @@ class WorkspaceFilter(django_filters.FilterSet):
   class Meta:
     model = Workspaces
     fields = ["owner", "search"]
+
+
+class ProjectFilter(django_filters.FilterSet):
+  name = django_filters.CharFilter(
+    lookup_expr="icontains"
+  )
+  created_by = django_filters.NumberFilter(
+    field_name="created_by_id"
+  )
+
+  class Meta:
+    model = Project
+    fields = ["name", "created_by"]
