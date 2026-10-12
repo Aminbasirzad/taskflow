@@ -55,3 +55,52 @@ class Project(models.Model):
 
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
+
+
+class Task(models.Model):
+  class Status(models.TextChoices):
+    TODO = "TODO", "To Do"
+    INPROGRESS = "IN_PROGRESS", "In Progress"
+    DONE = "DONE", "Done"
+  class Priority(models.TextChoices):
+    LOW = "LOW", "Low"
+    MEDIUM = "MEDIUM", "Medium"
+    HIGT = "HIGT", "Higt"
+
+  title = models.CharField(max_length=100)
+  description = models.TextField()
+
+  status = models.CharField(
+    max_length=20,
+    choices=Status.choices,
+    default=Status.TODO,
+  )
+
+  Priority = models.CharField(
+    max_length=20,
+    choices=Priority.choices,
+    default=Priority.MEDIUM,
+  )
+
+  project = models.ForeignKey(
+    Project,
+    on_delete=models.CASCADE,
+    related_name="tasks"
+  )
+  assignee = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name="assigned_tasks"
+  )
+
+  created_by = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.CASCADE,
+    related_name="created_tasks",
+  )
+
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  update_at = models.DateTimeField(auto_now=True)

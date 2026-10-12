@@ -13,3 +13,5 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         "Workspace name must be at leats 3 charcters."
       )
     return value
+
+

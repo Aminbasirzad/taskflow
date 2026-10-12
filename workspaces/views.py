@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .models import Workspaces, WorksoaceMember, Project
+from .models import Workspaces, WorksoaceMember, Project, Task
 from .serializers import WorkspaceSerializer
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsWorkspaceMember, IsProjectMember
+from .permissions import IsWorkspaceMember, IsProjectMember, IsTaskMember
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import WorkspaceFilter, ProjectFilter
 from .project_serializer import ProjectSerializer
+from .task_serializers import TaskSerializer
 
 
 class WorkspaceListCreateView(generics.ListCreateAPIView):
@@ -80,3 +81,28 @@ class ProjectDetailView(generics.RetrieveUpdateAPIView):
     return Project.objects.filter(
       workspace__members__user=self.request.user
     )
+
+
+class TaskListCreateView(generics.ListCreateAPIView):
+  serializer_class = TaskSerializer
+  permission_classes = [IsAuthenticated]
+
+  def get_queryset(self):
+    return Task.objects.filter(
+      project__workspace__members__user=self.request.user
+    ).distinct()
+
+  def perform_create(self, serializer):
+    serializer.save(
+      created_by=self.request.user
+    )
+
+
+class TaskDetailView(generics.RetrieveUpdateAPIView):
+  serializer_class = TaskSerializer
+  permission_classes = [IsAuthenticated, IsTaskMember]
+
+  def get_queryset(self):
+    return Task.objects.filter(
+      project__workspace__members__user=self.request.user
+    ).distinct()
