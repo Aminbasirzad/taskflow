@@ -43,3 +43,24 @@ class IsProjectMember(BasePermission):
     if request.method == "DELETE" and membership.role == "OWNER":
       return True
 
+
+class IsTaskMember(BasePermission):
+  def has_object_permission(self, request, view, obj):
+    membership = WorksoaceMember.objects.filter(
+      workspace=obj.project.workspace,
+      user=request.user,
+    ).first()
+
+    if not membership:
+      return False
+
+    if request.method == "GET":
+      return True
+
+    if request.method in ["PATCH", "PUST"]:
+      return membership.role in ["OWNER", "MANAGER"]
+
+    if request.method == "DELETE":
+      return membership.role == "OWNER"
+
+    return False

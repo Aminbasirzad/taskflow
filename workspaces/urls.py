@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import WorkspaceListCreateView, WorkspaceDetailView, ProjectListCreateView, ProjectDetailView
+from .views import WorkspaceListCreateView, WorkspaceDetailView, ProjectListCreateView, ProjectDetailView, TaskListCreateView, TaskDetailView
 
 urlpatterns = [
   path(
@@ -24,5 +24,17 @@ urlpatterns = [
     'projects/<int:pk>/',
     ProjectDetailView.as_view(),
     name='project-detail',
-  )
+  ),
+
+  path(
+  'tasks/',
+  TaskListCreateView.as_view(),
+  name='tasl-list-create',
+  ),
+
+  path(
+    'tasks/<int:pk>/',
+    TaskDetailView.as_view(),
+    name='task-detail'
+  ),
 ]
