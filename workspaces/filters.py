@@ -1,5 +1,5 @@
 import django_filters
-from .models import Workspaces, Project
+from .models import Workspaces, Project, Task
 
 
 class WorkspaceFilter(django_filters.FilterSet):
@@ -25,3 +25,25 @@ class ProjectFilter(django_filters.FilterSet):
   class Meta:
     model = Project
     fields = ["name", "created_by"]
+
+
+class TaskFilter(django_filters.FilterSet):
+  title = django_filters.CharFilter(
+    lookup_expr="icontains"
+  )
+
+  status = django_filters.ChoiceFilter(
+    choices=Task.Status.choices
+  )
+
+  priority = django_filters.ChoiceFilter(
+    choices=Task.Priority.choices
+  )
+
+  project = django_filters.NumberFilter(
+    field_name="project_id"
+  )
+
+  class Meta:
+    model = Task
+    fields = ["title", "status", "priority", "project"]

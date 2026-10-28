@@ -65,7 +65,7 @@ class Task(models.Model):
   class Priority(models.TextChoices):
     LOW = "LOW", "Low"
     MEDIUM = "MEDIUM", "Medium"
-    HIGT = "HIGT", "Higt"
+    HIGH = "HIGH", "High"
 
   title = models.CharField(max_length=100)
   description = models.TextField()
@@ -76,7 +76,7 @@ class Task(models.Model):
     default=Status.TODO,
   )
 
-  Priority = models.CharField(
+  priority = models.CharField(
     max_length=20,
     choices=Priority.choices,
     default=Priority.MEDIUM,

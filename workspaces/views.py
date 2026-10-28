@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsWorkspaceMember, IsProjectMember, IsTaskMember
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import WorkspaceFilter, ProjectFilter
+from .filters import WorkspaceFilter, ProjectFilter, TaskFilter
 from .project_serializer import ProjectSerializer
 from .task_serializers import TaskSerializer
 
@@ -86,6 +86,10 @@ class ProjectDetailView(generics.RetrieveUpdateAPIView):
 class TaskListCreateView(generics.ListCreateAPIView):
   serializer_class = TaskSerializer
   permission_classes = [IsAuthenticated]
+  filter_backends = [DjangoFilterBackend, OrderingFilter]
+  filterset_class = TaskFilter
+  ordering_fields = ["title", "created_at", "priority", "status"]
+  ordering = ["-created_at"]
 
   def get_queryset(self):
     return Task.objects.filter(
@@ -98,7 +102,7 @@ class TaskListCreateView(generics.ListCreateAPIView):
     )
 
 
-class TaskDetailView(generics.RetrieveUpdateAPIView):
+class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
   serializer_class = TaskSerializer
   permission_classes = [IsAuthenticated, IsTaskMember]
 
