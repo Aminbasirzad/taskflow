@@ -2,65 +2,71 @@ from rest_framework.permissions import BasePermission
 from .models import WorksoaceMember
 
 
+from rest_framework.permissions import BasePermission
+from .models import WorksoaceMember
+
+
 class IsWorkspaceMember(BasePermission):
   def has_object_permission(self, request, view, obj):
-    membership = WorksoaceMember.objects.filter(
-      workspace=obj,
-      user=request.user
-    ).filter()
+      membership = WorksoaceMember.objects.filter(
+          workspace=obj,
+          user=request.user,
+      ).first()
 
-    if not membership:
+      if not membership:
+          return False
+
+      if request.method in ("GET", "HEAD", "OPTIONS"):
+          return True
+
+      if request.method in ("PUT", "PATCH"):
+          return membership.role in ("OWNER", "MANAGER")
+
+      if request.method == "DELETE":
+          return membership.role == "OWNER"
+
       return False
-
-    if request.method == 'GET':
-      return True
-
-    if request.method in  ["PATCH", "PUT"] and membership.role in ["OWNER", "MANAGER"]:
-      return True
-
-    if request.method == "DELETE" and membership.role == "OWNER":
-      return True
-
 
 
 class IsProjectMember(BasePermission):
+   def has_object_permission(self, request, view, obj):
+      membership = WorksoaceMember.objects.filter(
+        workspace=obj.workspace,
+        user=request.user,
+      ).first()
 
-  def has_object_permission(self, request, view, obj):
-    membership = WorksoaceMember.objects.filter(
-      workspace=obj,
-      user=request.user
-    ).first()
+      if not membership:
+          return False
 
-    if not membership:
+      if request.method in ("GET", "HEAD", "OPTIONS"):
+          return True
+
+      if request.method in ("PUT", "PATCH"):
+          return membership.role in ("OWNER", "MANAGER")
+
+      if request.method == "DELETE":
+          return membership.role == "OWNER"
+
       return False
-
-    if request.method == "GET":
-      return True
-
-    if request.method in ["PATCH", "PUT"] and membership.role in ["OWNER", "MANAGER"]:
-      return True
-
-    if request.method == "DELETE" and membership.role == "OWNER":
-      return True
 
 
 class IsTaskMember(BasePermission):
   def has_object_permission(self, request, view, obj):
-    membership = WorksoaceMember.objects.filter(
-      workspace=obj.project.workspace,
-      user=request.user,
-    ).first()
+      membership = WorksoaceMember.objects.filter(
+          workspace=obj.project.workspace,
+          user=request.user,
+      ).first()
 
-    if not membership:
+      if not membership:
+          return False
+
+      if request.method in ("GET", "HEAD", "OPTIONS"):
+          return True
+
+      if request.method in ("PUT", "PATCH"):
+          return membership.role in ("OWNER", "MANAGER")
+
+      if request.method == "DELETE":
+          return membership.role == "OWNER"
+
       return False
-
-    if request.method == "GET":
-      return True
-
-    if request.method in ["PATCH", "PUST"]:
-      return membership.role in ["OWNER", "MANAGER"]
-
-    if request.method == "DELETE":
-      return membership.role == "OWNER"
-
-    return False

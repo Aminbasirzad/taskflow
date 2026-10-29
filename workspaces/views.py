@@ -15,7 +15,6 @@ class WorkspaceListCreateView(generics.ListCreateAPIView):
   queryset = Workspaces.objects.all()
   serializer_class = WorkspaceSerializer
   permission_classes = [IsAuthenticated, IsWorkspaceMember]
-  frilter_backends = [OrderingFilter]
   ordering_fields = ["name", "created_at"]
   ordering = ["name"]
   filter_backends = [
@@ -45,8 +44,13 @@ class WorkspaceListCreateView(generics.ListCreateAPIView):
 
 
 class WorkspaceDetailView(generics.RetrieveUpdateDestroyAPIView):
-  queryset = Workspaces.objects.all()
-  serializer_class = WorkspaceSerializer
+    serializer_class = WorkspaceSerializer
+    permission_classes = [IsAuthenticated, IsWorkspaceMember]
+
+    def get_queryset(self):
+        return Workspaces.objects.filter(
+            members__user=self.request.user
+        ).distinct()
 
 
 class ProjectListCreateView(generics.ListCreateAPIView):

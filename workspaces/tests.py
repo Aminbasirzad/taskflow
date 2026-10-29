@@ -39,6 +39,38 @@ class TaskAPITests(APITestCase):
         self.client.force_authenticate(user=self.user)
 
 
+    def test_outsider_cannot_view_workspace(self):
+        outsider = User.objects.create_user(
+            username="workspace_outsider",
+            password="TestPassword123!",
+        )
+
+        self.client.force_authenticate(user=outsider)
+        response = self.client.get(
+            f"/api/generics/{self.workspace.id}"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+
+    def test_outsider_cannot_view_project(self):
+        outsider = User.objects.create_user(
+            username="project_outsider",
+            password="TestPassword123!",
+        )
+
+        self.client.force_authenticate(user=outsider)
+        response = self.client.get(
+            f"/api/projects/{self.project.id}/"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+
     def test_member_cannot_update_task(self):
         member = User.objects.create_user(
             username="member",
